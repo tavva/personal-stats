@@ -2,11 +2,15 @@ import os
 import base64
 import secrets
 import hashlib
+
 from urllib.parse import urlencode
+from replit import db
 
 
 def request_authorisation():
     code_verifier = secrets.token_urlsafe(43)
+    db["code_verifier"] = code_verifier
+
     code_challenge = base64.urlsafe_b64encode(
         hashlib.sha256(code_verifier.encode("utf-8")).digest()
     ).decode("utf-8")[:-1]

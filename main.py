@@ -1,5 +1,7 @@
 import flask
 
+from replit import db
+
 app = flask.Flask(
     __name__,
     template_folder='templates',
@@ -34,7 +36,11 @@ def redirect():
     code = flask.request.args.get('code')
     if not code:
         flask.abort(404)
-    return code
+        
+    db["authorisation_code"] = code
+    
+    
+    return "Authorised."
 
 if __name__ == "__main__":
     app.run(
