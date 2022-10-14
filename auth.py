@@ -1,29 +1,15 @@
-import os
-import base64
-import secrets
-import hashlib
+import flask
 
-from urllib.parse import urlencode
-from replit import db
+from functools import wraps
 
-
-def request_authorisation():
-    code_verifier = secrets.token_urlsafe(43)
-    db["code_verifier"] = code_verifier
-
-    code_challenge = base64.urlsafe_b64encode(
-        hashlib.sha256(code_verifier.encode("utf-8")).digest()
-    ).decode("utf-8")[:-1]
-    
-    params = {
-        "client_id": os.environ["FITBIT_CLIENT_ID"],
-        "response_type": "code",
-        "code_challenge": code_challenge,
-        "code_challenge_method": "S256",
-        "scope": "weight",
-    }
-    
-    authorization_url = "https://www.fitbit.com/oauth2/authorize?" + urlencode(params)
-
-    print("Open this URL in your browser:")
-    print(authorization_url)
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        print(flask.request.headers)
+        if flask.g.user_id is None:
+            return flask.redirect(
+                flask.url_for('login', next=flask.request.url),
+            )
+        return f(*args, **kwargs)
+        
+    return decorated_function
