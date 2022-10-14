@@ -5,8 +5,7 @@ from functools import wraps
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        print(flask.request.headers)
-        if flask.g.user_id is None:
+        if not flask.g.get('user_id'):
             return flask.redirect(
                 flask.url_for('login', next=flask.request.url),
             )

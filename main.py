@@ -32,7 +32,7 @@ def home():
 
 @app.route('/login')
 def login():
-    if flask.g.user_id:
+    if flask.g.get('user_id'):
         return flask.redirect(flask.url_for('home'))
 
     return flask.render_template('login.html')
@@ -40,7 +40,8 @@ def login():
 
 @app.before_request
 def load_user():
-    flask.g.user_id = flask.request.headers.get('X-Replit-User-Id')
+    if flask.request.headers['X-Replit-User-Id']:
+        flask.g.user_id = flask.request.headers.get('X-Replit-User-Id')
 
 
 # Read access token from DB
